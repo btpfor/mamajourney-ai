@@ -14,7 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_type: string
+          created_at: string
+          id: string
+          location: string | null
+          notes: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_type?: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_type?: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          blood_pressure: string | null
+          created_at: string
+          entry_date: string
+          id: string
+          mood: string | null
+          notes: string | null
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          blood_pressure?: string | null
+          created_at?: string
+          entry_date?: string
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          blood_pressure?: string | null
+          created_at?: string
+          entry_date?: string
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          full_name: string | null
+          id: string
+          lmp_date: string | null
+          locale: string
+          onboarded: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          full_name?: string | null
+          id: string
+          lmp_date?: string | null
+          locale?: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          full_name?: string | null
+          id?: string
+          lmp_date?: string | null
+          locale?: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      symptoms: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          intensity: number
+          notes: string | null
+          symptom: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          intensity?: number
+          notes?: string | null
+          symptom: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          intensity?: number
+          notes?: string | null
+          symptom?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
