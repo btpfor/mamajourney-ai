@@ -13,8 +13,10 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWeeksRouteImport } from './routes/_authenticated/weeks'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedWeeksWeekRouteImport } from './routes/_authenticated/weeks.$week'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -35,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWeeksRoute = AuthenticatedWeeksRouteImport.update({
+  id: '/weeks',
+  path: '/weeks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -45,6 +52,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWeeksWeekRoute = AuthenticatedWeeksWeekRouteImport.update({
+  id: '/$week',
+  path: '/$week',
+  getParentRoute: () => AuthenticatedWeeksRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +64,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/weeks': typeof AuthenticatedWeeksRouteWithChildren
+  '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +73,8 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/weeks': typeof AuthenticatedWeeksRouteWithChildren
+  '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +84,28 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/weeks': typeof AuthenticatedWeeksRouteWithChildren
+  '/_authenticated/weeks/$week': typeof AuthenticatedWeeksWeekRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reset-password' | '/dashboard' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/dashboard'
+    | '/onboarding'
+    | '/weeks'
+    | '/weeks/$week'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/reset-password' | '/dashboard' | '/onboarding'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/dashboard'
+    | '/onboarding'
+    | '/weeks'
+    | '/weeks/$week'
   id:
     | '__root__'
     | '/'
@@ -82,6 +114,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/weeks'
+    | '/_authenticated/weeks/$week'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -121,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/weeks': {
+      id: '/_authenticated/weeks'
+      path: '/weeks'
+      fullPath: '/weeks'
+      preLoaderRoute: typeof AuthenticatedWeeksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -135,17 +176,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/weeks/$week': {
+      id: '/_authenticated/weeks/$week'
+      path: '/$week'
+      fullPath: '/weeks/$week'
+      preLoaderRoute: typeof AuthenticatedWeeksWeekRouteImport
+      parentRoute: typeof AuthenticatedWeeksRoute
+    }
   }
 }
+
+interface AuthenticatedWeeksRouteChildren {
+  AuthenticatedWeeksWeekRoute: typeof AuthenticatedWeeksWeekRoute
+}
+
+const AuthenticatedWeeksRouteChildren: AuthenticatedWeeksRouteChildren = {
+  AuthenticatedWeeksWeekRoute: AuthenticatedWeeksWeekRoute,
+}
+
+const AuthenticatedWeeksRouteWithChildren =
+  AuthenticatedWeeksRoute._addFileChildren(AuthenticatedWeeksRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedWeeksRoute: typeof AuthenticatedWeeksRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedWeeksRoute: AuthenticatedWeeksRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
