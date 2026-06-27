@@ -11,10 +11,9 @@ export type Lang = (typeof SUPPORTED_LANGS)[number];
 const canDetect = typeof window !== "undefined";
 
 if (!i18n.isInitialized) {
-  i18n
-    .use(...(canDetect ? [LanguageDetector] : []))
-    .use(initReactI18next)
-    .init({
+  let chain = i18n.use(initReactI18next);
+  if (canDetect) chain = chain.use(LanguageDetector);
+  chain.init({
       resources: {
         fr: { translation: fr },
         en: { translation: en },
