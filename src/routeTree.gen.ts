@@ -22,6 +22,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAssistantIndexRouteImport } from './routes/_authenticated/assistant.index'
 import { Route as AuthenticatedWeeksWeekRouteImport } from './routes/_authenticated/weeks.$week'
+import { Route as AuthenticatedAssistantThreadIdRouteImport } from './routes/_authenticated/assistant.$threadId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -88,6 +89,12 @@ const AuthenticatedWeeksWeekRoute = AuthenticatedWeeksWeekRouteImport.update({
   path: '/$week',
   getParentRoute: () => AuthenticatedWeeksRoute,
 } as any)
+const AuthenticatedAssistantThreadIdRoute =
+  AuthenticatedAssistantThreadIdRouteImport.update({
+    id: '/assistant/$threadId',
+    path: '/assistant/$threadId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant/': typeof AuthenticatedAssistantIndexRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant': typeof AuthenticatedAssistantIndexRoute
 }
@@ -130,6 +139,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/_authenticated/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/_authenticated/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/_authenticated/assistant/': typeof AuthenticatedAssistantIndexRoute
 }
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/weeks'
     | '/api/chat'
+    | '/assistant/$threadId'
     | '/weeks/$week'
     | '/assistant/'
   fileRoutesByTo: FileRoutesByTo
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/weeks'
     | '/api/chat'
+    | '/assistant/$threadId'
     | '/weeks/$week'
     | '/assistant'
   id:
@@ -175,6 +187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/weeks'
     | '/api/chat'
+    | '/_authenticated/assistant/$threadId'
     | '/_authenticated/weeks/$week'
     | '/_authenticated/assistant/'
   fileRoutesById: FileRoutesById
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWeeksWeekRouteImport
       parentRoute: typeof AuthenticatedWeeksRoute
     }
+    '/_authenticated/assistant/$threadId': {
+      id: '/_authenticated/assistant/$threadId'
+      path: '/assistant/$threadId'
+      fullPath: '/assistant/$threadId'
+      preLoaderRoute: typeof AuthenticatedAssistantThreadIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -301,6 +321,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWeeksRoute: typeof AuthenticatedWeeksRouteWithChildren
+  AuthenticatedAssistantThreadIdRoute: typeof AuthenticatedAssistantThreadIdRoute
   AuthenticatedAssistantIndexRoute: typeof AuthenticatedAssistantIndexRoute
 }
 
@@ -311,6 +332,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWeeksRoute: AuthenticatedWeeksRouteWithChildren,
+  AuthenticatedAssistantThreadIdRoute: AuthenticatedAssistantThreadIdRoute,
   AuthenticatedAssistantIndexRoute: AuthenticatedAssistantIndexRoute,
 }
 

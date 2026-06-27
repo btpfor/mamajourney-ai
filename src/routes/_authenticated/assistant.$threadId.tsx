@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Send, Sparkles, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,7 +91,7 @@ function Chat({
         conversation_id: threadId,
         user_id: u.user.id,
         role: "assistant",
-        parts: message.parts as unknown as object,
+        parts: message.parts as unknown as Database["public"]["Tables"]["messages"]["Insert"]["parts"],
       });
       await supabase
         .from("conversations")
@@ -116,7 +117,7 @@ function Chat({
         conversation_id: threadId,
         user_id: u.user.id,
         role: "user",
-        parts: userParts as unknown as object,
+        parts: userParts as unknown as Database["public"]["Tables"]["messages"]["Insert"]["parts"],
       });
       // Auto-rename first user message → conversation title
       if (messages.length === 0) {
