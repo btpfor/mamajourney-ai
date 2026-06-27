@@ -8,9 +8,11 @@ import wo from "./locales/wo";
 export const SUPPORTED_LANGS = ["fr", "en", "wo"] as const;
 export type Lang = (typeof SUPPORTED_LANGS)[number];
 
+const canDetect = typeof window !== "undefined";
+
 if (!i18n.isInitialized) {
   i18n
-    .use(LanguageDetector)
+    .use(...(canDetect ? [LanguageDetector] : []))
     .use(initReactI18next)
     .init({
       resources: {
@@ -18,6 +20,7 @@ if (!i18n.isInitialized) {
         en: { translation: en },
         wo: { translation: wo },
       },
+      lng: canDetect ? undefined : "fr",
       fallbackLng: "fr",
       supportedLngs: SUPPORTED_LANGS as unknown as string[],
       interpolation: { escapeValue: false },
