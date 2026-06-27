@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Heart, Baby, Calendar as CalIcon, BookHeart, Sparkles, Apple, Activity, ChevronRight, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Baby, Calendar as CalIcon, BookHeart, Sparkles, Apple, Activity, ChevronRight, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { getPregnancyState, weekInfo, formatSize, formatWeight } from "@/lib/pregnancy";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -12,7 +14,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
@@ -26,6 +30,39 @@ function Dashboard() {
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarded) navigate({ to: "/onboarding" });
   }, [isLoading, profile, navigate]);
+
+  // Sync locale from profile
+  useEffect(() => {
+    if (profile?.locale && profile.locale !== i18n.language) {
+      i18n.changeLanguage(profile.locale);
+    }
+  }, [profile?.locale, i18n]);
+
+  // Generate weekly notification if the week advanced
+  useEffect(() => {
+    (async () => {
+      if (!profile?.lmp_date) return;
+      const s = getPregnancyState(new Date(profile.lmp_date));
+      const lastNotified = (profile as { last_weekly_notified_week?: number | null })
+        .last_weekly_notified_week;
+      if (lastNotified === s.week) return;
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      await supabase.from("notifications").insert({
+        user_id: u.user.id,
+        type: "weekly",
+        title: t("notifications.weeklyTitle", { week: s.week }),
+        body: t("notifications.weeklyBody"),
+        link: `/weeks/${s.week}`,
+      });
+      await supabase
+        .from("profiles")
+        .update({ last_weekly_notified_week: s.week })
+        .eq("id", u.user.id);
+      qc.invalidateQueries({ queryKey: ["notifications-unread"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    })();
+  }, [profile?.lmp_date, profile, t, qc]);
 
   if (isLoading || !profile) {
     return <AppShell><div className="h-40 animate-pulse rounded-3xl bg-muted" /></AppShell>;
@@ -42,12 +79,10 @@ function Dashboard() {
     <AppShell>
       <header className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">Bonjour {profile.full_name ?? ""}</p>
-          <h1 className="font-display text-2xl font-semibold">Bienvenue dans votre suivi ❤️</h1>
+          <p className="text-sm text-muted-foreground">{t("dashboard.hello")} {profile.full_name ?? ""}</p>
+          <h1 className="font-display text-2xl font-semibold">{t("dashboard.welcome")} ❤️</h1>
         </div>
-        <Link to="/profile" className="grid h-11 w-11 place-items-center rounded-2xl bg-card shadow-card">
-          <Heart className="h-5 w-5 fill-primary text-primary" />
-        </Link>
+        <NotificationsBell />
       </header>
 
       {/* Hero progress */}
@@ -71,7 +106,7 @@ function Dashboard() {
           <div className="flex-1">
             <p className="text-xs uppercase tracking-wider text-foreground/60">{state.saLabel}</p>
             <p className="mt-1 font-display text-xl font-semibold leading-tight">
-              {state.daysRemaining} jours<br />avant l'arrivée
+              {state.daysRemaining} {t("dashboard.daysBeforeBaby")}
             </p>
             <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/65 px-3 py-1 text-xs font-semibold backdrop-blur">
               <CalIcon className="h-3 w-3" /> {state.formattedDue}
@@ -82,9 +117,9 @@ function Dashboard() {
 
       {/* Quick stats */}
       <section className="mt-4 grid grid-cols-3 gap-3">
-        <Stat label="Semaines" value={`${state.week}/40`} />
-        <Stat label="Mois" value={`${state.month}/9`} />
-        <Stat label="Trimestre" value={`${state.trimester}/3`} />
+        <Stat label={t("dashboard.weeks")} value={`${state.week}/40`} />
+        <Stat label={t("dashboard.months")} value={`${state.month}/9`} />
+        <Stat label={t("dashboard.trimester")} value={`${state.trimester}/3`} />
       </section>
 
       {/* Baby card */}
@@ -92,14 +127,14 @@ function Dashboard() {
         <section className="rounded-3xl gradient-baby p-5 shadow-card">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold backdrop-blur">
-              <Baby className="h-3 w-3" /> Bébé cette semaine
+              <Baby className="h-3 w-3" /> {t("dashboard.babyThisWeek")}
             </span>
             <ChevronRight className="h-4 w-4 text-foreground/60" />
           </div>
           <div className="mt-4 flex items-center gap-4">
             <div className="text-6xl">{wk.fruitEmoji}</div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground">Votre bébé est aussi grand qu'un(e)</p>
+              <p className="text-xs text-muted-foreground">{t("dashboard.babyIsSizeOf")}</p>
               <p className="font-display text-xl font-semibold capitalize">{wk.fruit}</p>
               <div className="mt-2 flex gap-3 text-xs text-foreground/70">
                 <span>📏 {formatSize(wk.sizeMm)}</span>
@@ -113,10 +148,10 @@ function Dashboard() {
 
       {/* Feature tiles */}
       <section className="mt-4 grid grid-cols-2 gap-3">
-        <Tile to="/journal" label="Journal" icon={BookHeart} color="bg-blush" desc="Poids, humeur, notes" />
-        <Tile to="/calendar" label="Agenda" icon={CalIcon} color="bg-sky" desc="Rendez-vous & échos" />
-        <Tile to="/assistant" label="Assistant IA" icon={Sparkles} color="bg-lavender" desc="Posez vos questions" />
-        <Tile to="/weeks" label="Semaine par semaine" icon={Activity} color="bg-mint" desc="Évolution du bébé" />
+        <Tile to="/journal" label={t("nav.journal")} icon={BookHeart} color="bg-blush" desc={t("dashboard.journalDesc")} />
+        <Tile to="/calendar" label={t("nav.calendar")} icon={CalIcon} color="bg-sky" desc={t("dashboard.calendarDesc")} />
+        <Tile to="/assistant" label={t("assistant.title")} icon={Sparkles} color="bg-lavender" desc={t("dashboard.assistantDesc")} />
+        <Tile to="/weeks" label={t("dashboard.weekByWeek")} icon={Activity} color="bg-mint" desc={t("dashboard.weekByWeekDesc")} />
       </section>
 
       <section className="mt-4 rounded-3xl bg-card p-5 shadow-card">
@@ -125,7 +160,7 @@ function Dashboard() {
             <Apple className="h-5 w-5" />
           </div>
           <div className="flex-1">
-            <p className="font-display text-sm font-semibold">Conseil du jour</p>
+            <p className="font-display text-sm font-semibold">{t("dashboard.tipOfDay")}</p>
             <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{wk.tips[0]}</p>
           </div>
         </div>
