@@ -147,7 +147,7 @@ function CalendarPage() {
 }
 
 function ApptCard({ a, highlight }: { a: any; highlight?: boolean }) {
-  const d = new Date(a.appointment_at);
+  const d = new Date(a.appointment_date);
   return (
     <article className={`rounded-3xl p-5 shadow-card ${highlight ? "gradient-baby" : "bg-card"}`}>
       <div className="flex items-start gap-3">
