@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -80,9 +80,9 @@ function NotificationsPage() {
         {notifs.data?.map((n) => {
           const Icon = n.type === "appointment" ? CalendarDays : Sparkles;
           return (
-            <Link
+            <a
               key={n.id}
-              to={(n.link ?? "/dashboard") as "/dashboard"}
+              href={n.link ?? "/dashboard"}
               className={`flex items-start gap-3 rounded-2xl p-4 shadow-card transition ${
                 n.read_at ? "bg-card" : "bg-blush/50"
               }`}
@@ -98,7 +98,7 @@ function NotificationsPage() {
                 </p>
               </div>
               {!n.read_at && <span className="mt-2 h-2 w-2 rounded-full bg-primary" />}
-            </Link>
+            </a>
           );
         })}
       </div>
