@@ -40,7 +40,7 @@ function CalendarPage() {
   const appts = useQuery({
     queryKey: ["appointments"],
     queryFn: async () => {
-      const { data } = await supabase.from("appointments").select("*").order("appointment_at", { ascending: true });
+      const { data } = await supabase.from("appointments").select("*").order("appointment_date", { ascending: true });
       return data ?? [];
     },
   });
@@ -52,7 +52,7 @@ function CalendarPage() {
       if (!title || !date) throw new Error("Titre et date requis");
       const at = new Date(`${date}T${time}:00`).toISOString();
       const { error } = await supabase.from("appointments").insert({
-        user_id: u.user.id, title, kind, appointment_at: at,
+        user_id: u.user.id, title, appointment_type: kind, appointment_date: at,
         location: location || null, notes: notes || null,
       });
       if (error) throw error;
@@ -66,7 +66,7 @@ function CalendarPage() {
   });
 
   const now = new Date();
-  const upcoming = (appts.data ?? []).filter((a: any) => isAfter(new Date(a.appointment_at), now) || isSameDay(new Date(a.appointment_at), now));
+  const upcoming = (appts.data ?? []).filter((a: any) => isAfter(new Date(a.appointment_date), now) || isSameDay(new Date(a.appointment_date), now));
   const past = (appts.data ?? []).filter((a: any) => !upcoming.includes(a));
 
   return (
@@ -147,7 +147,7 @@ function CalendarPage() {
 }
 
 function ApptCard({ a, highlight }: { a: any; highlight?: boolean }) {
-  const d = new Date(a.appointment_at);
+  const d = new Date(a.appointment_date);
   return (
     <article className={`rounded-3xl p-5 shadow-card ${highlight ? "gradient-baby" : "bg-card"}`}>
       <div className="flex items-start gap-3">
