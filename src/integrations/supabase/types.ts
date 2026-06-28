@@ -139,38 +139,91 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          channel_inapp: boolean
+          channel_push: boolean
+          reminder_offsets_minutes: number[]
+          updated_at: string
+          user_id: string
+          weekly_day: number
+          weekly_enabled: boolean
+          weekly_hour_utc: number
+        }
+        Insert: {
+          channel_inapp?: boolean
+          channel_push?: boolean
+          reminder_offsets_minutes?: number[]
+          updated_at?: string
+          user_id: string
+          weekly_day?: number
+          weekly_enabled?: boolean
+          weekly_hour_utc?: number
+        }
+        Update: {
+          channel_inapp?: boolean
+          channel_push?: boolean
+          reminder_offsets_minutes?: number[]
+          updated_at?: string
+          user_id?: string
+          weekly_day?: number
+          weekly_enabled?: boolean
+          weekly_hour_utc?: number
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
+          appointment_id: string | null
           body: string | null
           created_at: string
+          delivered_at: string | null
           id: string
           link: string | null
+          push_sent_at: string | null
           read_at: string | null
+          scheduled_at: string | null
           title: string
           type: string
           user_id: string
         }
         Insert: {
+          appointment_id?: string | null
           body?: string | null
           created_at?: string
+          delivered_at?: string | null
           id?: string
           link?: string | null
+          push_sent_at?: string | null
           read_at?: string | null
+          scheduled_at?: string | null
           title: string
           type?: string
           user_id: string
         }
         Update: {
+          appointment_id?: string | null
           body?: string | null
           created_at?: string
+          delivered_at?: string | null
           id?: string
           link?: string | null
+          push_sent_at?: string | null
           read_at?: string | null
+          scheduled_at?: string | null
           title?: string
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -205,6 +258,36 @@ export type Database = {
           locale?: string
           onboarded?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
