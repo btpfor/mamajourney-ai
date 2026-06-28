@@ -24,6 +24,7 @@ import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAssistantIndexRouteImport } from './routes/_authenticated/assistant.index'
 import { Route as AuthenticatedWeeksWeekRouteImport } from './routes/_authenticated/weeks.$week'
 import { Route as AuthenticatedAssistantThreadIdRouteImport } from './routes/_authenticated/assistant.$threadId'
+import { Route as ApiPublicHooksWeeklyRemindersRouteImport } from './routes/api/public/hooks/weekly-reminders'
 import { Route as ApiPublicHooksDispatchRemindersRouteImport } from './routes/api/public/hooks/dispatch-reminders'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -103,6 +104,12 @@ const AuthenticatedAssistantThreadIdRoute =
     path: '/assistant/$threadId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksWeeklyRemindersRoute =
+  ApiPublicHooksWeeklyRemindersRouteImport.update({
+    id: '/api/public/hooks/weekly-reminders',
+    path: '/api/public/hooks/weekly-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksDispatchRemindersRoute =
   ApiPublicHooksDispatchRemindersRouteImport.update({
     id: '/api/public/hooks/dispatch-reminders',
@@ -126,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant/': typeof AuthenticatedAssistantIndexRoute
   '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -143,6 +151,7 @@ export interface FileRoutesByTo {
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant': typeof AuthenticatedAssistantIndexRoute
   '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/_authenticated/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/_authenticated/assistant/': typeof AuthenticatedAssistantIndexRoute
   '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/weeks/$week'
     | '/assistant/'
     | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/weeks/$week'
     | '/assistant'
     | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   id:
     | '__root__'
     | '/'
@@ -216,6 +228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/weeks/$week'
     | '/_authenticated/assistant/'
     | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -225,6 +238,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiPublicHooksDispatchRemindersRoute: typeof ApiPublicHooksDispatchRemindersRoute
+  ApiPublicHooksWeeklyRemindersRoute: typeof ApiPublicHooksWeeklyRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -334,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantThreadIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/weekly-reminders': {
+      id: '/api/public/hooks/weekly-reminders'
+      path: '/api/public/hooks/weekly-reminders'
+      fullPath: '/api/public/hooks/weekly-reminders'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/dispatch-reminders': {
       id: '/api/public/hooks/dispatch-reminders'
       path: '/api/public/hooks/dispatch-reminders'
@@ -389,6 +410,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiChatRoute: ApiChatRoute,
   ApiPublicHooksDispatchRemindersRoute: ApiPublicHooksDispatchRemindersRoute,
+  ApiPublicHooksWeeklyRemindersRoute: ApiPublicHooksWeeklyRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
