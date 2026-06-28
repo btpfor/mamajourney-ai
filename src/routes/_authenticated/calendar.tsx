@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { format, isAfter, isSameDay, startOfDay, endOfDay, endOfWeek, endOfMonth } from "date-fns";
+import { format, isAfter, isSameDay, startOfDay, endOfWeek, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Plus, MapPin, Loader2, Stethoscope, Pencil, Trash2, Search, X } from "lucide-react";
 import { toast } from "sonner";
