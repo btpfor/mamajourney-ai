@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWeeksRouteImport } from './routes/_authenticated/weeks'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -24,6 +25,8 @@ import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAssistantIndexRouteImport } from './routes/_authenticated/assistant.index'
 import { Route as AuthenticatedWeeksWeekRouteImport } from './routes/_authenticated/weeks.$week'
 import { Route as AuthenticatedAssistantThreadIdRouteImport } from './routes/_authenticated/assistant.$threadId'
+import { Route as ApiPublicHooksWeeklyRemindersRouteImport } from './routes/api/public/hooks/weekly-reminders'
+import { Route as ApiPublicHooksDispatchRemindersRouteImport } from './routes/api/public/hooks/dispatch-reminders'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -52,6 +55,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
 const AuthenticatedWeeksRoute = AuthenticatedWeeksRouteImport.update({
   id: '/weeks',
   path: '/weeks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
@@ -102,6 +110,18 @@ const AuthenticatedAssistantThreadIdRoute =
     path: '/assistant/$threadId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksWeeklyRemindersRoute =
+  ApiPublicHooksWeeklyRemindersRouteImport.update({
+    id: '/api/public/hooks/weekly-reminders',
+    path: '/api/public/hooks/weekly-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksDispatchRemindersRoute =
+  ApiPublicHooksDispatchRemindersRouteImport.update({
+    id: '/api/public/hooks/dispatch-reminders',
+    path: '/api/public/hooks/dispatch-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -113,11 +133,14 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant/': typeof AuthenticatedAssistantIndexRoute
+  '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -129,11 +152,14 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/assistant': typeof AuthenticatedAssistantIndexRoute
+  '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,11 +173,14 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/weeks': typeof AuthenticatedWeeksRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/_authenticated/weeks/$week': typeof AuthenticatedWeeksWeekRoute
   '/_authenticated/assistant/': typeof AuthenticatedAssistantIndexRoute
+  '/api/public/hooks/dispatch-reminders': typeof ApiPublicHooksDispatchRemindersRoute
+  '/api/public/hooks/weekly-reminders': typeof ApiPublicHooksWeeklyRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,11 +194,14 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/onboarding'
     | '/profile'
+    | '/settings'
     | '/weeks'
     | '/api/chat'
     | '/assistant/$threadId'
     | '/weeks/$week'
     | '/assistant/'
+    | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,11 +213,14 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/onboarding'
     | '/profile'
+    | '/settings'
     | '/weeks'
     | '/api/chat'
     | '/assistant/$threadId'
     | '/weeks/$week'
     | '/assistant'
+    | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   id:
     | '__root__'
     | '/'
@@ -198,11 +233,14 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/profile'
+    | '/_authenticated/settings'
     | '/_authenticated/weeks'
     | '/api/chat'
     | '/_authenticated/assistant/$threadId'
     | '/_authenticated/weeks/$week'
     | '/_authenticated/assistant/'
+    | '/api/public/hooks/dispatch-reminders'
+    | '/api/public/hooks/weekly-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -211,6 +249,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPublicHooksDispatchRemindersRoute: typeof ApiPublicHooksDispatchRemindersRoute
+  ApiPublicHooksWeeklyRemindersRoute: typeof ApiPublicHooksWeeklyRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -255,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/weeks'
       fullPath: '/weeks'
       preLoaderRoute: typeof AuthenticatedWeeksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -320,6 +367,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantThreadIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/weekly-reminders': {
+      id: '/api/public/hooks/weekly-reminders'
+      path: '/api/public/hooks/weekly-reminders'
+      fullPath: '/api/public/hooks/weekly-reminders'
+      preLoaderRoute: typeof ApiPublicHooksWeeklyRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/dispatch-reminders': {
+      id: '/api/public/hooks/dispatch-reminders'
+      path: '/api/public/hooks/dispatch-reminders'
+      fullPath: '/api/public/hooks/dispatch-reminders'
+      preLoaderRoute: typeof ApiPublicHooksDispatchRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -341,6 +402,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedWeeksRoute: typeof AuthenticatedWeeksRouteWithChildren
   AuthenticatedAssistantThreadIdRoute: typeof AuthenticatedAssistantThreadIdRoute
   AuthenticatedAssistantIndexRoute: typeof AuthenticatedAssistantIndexRoute
@@ -353,6 +415,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedWeeksRoute: AuthenticatedWeeksRouteWithChildren,
   AuthenticatedAssistantThreadIdRoute: AuthenticatedAssistantThreadIdRoute,
   AuthenticatedAssistantIndexRoute: AuthenticatedAssistantIndexRoute,
@@ -367,6 +430,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPublicHooksDispatchRemindersRoute: ApiPublicHooksDispatchRemindersRoute,
+  ApiPublicHooksWeeklyRemindersRoute: ApiPublicHooksWeeklyRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

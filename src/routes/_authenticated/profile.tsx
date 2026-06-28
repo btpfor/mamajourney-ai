@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { LogOut, Heart, Globe } from "lucide-react";
+import { LogOut, Heart, Globe, Bell, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
@@ -96,6 +96,17 @@ function ProfilePage() {
       <Button onClick={signOut} variant="outline" className="mt-6 w-full rounded-full">
         <LogOut className="mr-2 h-4 w-4" /> {t("profile.signOut")}
       </Button>
+
+      <Link
+        to="/settings"
+        className="mt-3 flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card transition hover:bg-accent"
+      >
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+          <Bell className="h-5 w-5" />
+        </div>
+        <span className="flex-1 text-sm font-medium">{t("profile.openSettings")}</span>
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      </Link>
     </AppShell>
   );
 }
