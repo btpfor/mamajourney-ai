@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { format, isAfter, isSameDay } from "date-fns";
+import { useMemo, useState } from "react";
+import { format, isAfter, isSameDay, startOfDay, endOfDay, endOfWeek, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Plus, MapPin, Loader2, Stethoscope, Pencil, Trash2 } from "lucide-react";
+import { Plus, MapPin, Loader2, Stethoscope, Pencil, Trash2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +42,10 @@ function CalendarPage() {
   const [time, setTime] = useState("10:00");
   const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
+  // Filters
+  const [search, setSearch] = useState("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "upcoming" | "past" | "today" | "week" | "month">("all");
 
   const appts = useQuery({
     queryKey: ["appointments"],
@@ -130,8 +134,41 @@ function CalendarPage() {
   });
 
   const now = new Date();
-  const upcoming = (appts.data ?? []).filter((a) => isAfter(new Date(a.appointment_date), now) || isSameDay(new Date(a.appointment_date), now));
-  const past = (appts.data ?? []).filter((a) => !upcoming.includes(a));
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return (appts.data ?? []).filter((a) => {
+      if (filterType !== "all" && a.appointment_type !== filterType) return false;
+      const d = new Date(a.appointment_date);
+      switch (filterStatus) {
+        case "upcoming":
+          if (!(isAfter(d, now) || isSameDay(d, now))) return false;
+          break;
+        case "past":
+          if (isAfter(d, now) || isSameDay(d, now)) return false;
+          break;
+        case "today":
+          if (!isSameDay(d, now)) return false;
+          break;
+        case "week":
+          if (d < startOfDay(now) || d > endOfWeek(now, { weekStartsOn: 1 })) return false;
+          break;
+        case "month":
+          if (d < startOfDay(now) || d > endOfMonth(now)) return false;
+          break;
+      }
+      if (q) {
+        const hay = `${a.title} ${a.location ?? ""} ${a.notes ?? ""} ${a.appointment_type}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [appts.data, search, filterType, filterStatus, now]);
+
+  const upcoming = filtered.filter((a) => isAfter(new Date(a.appointment_date), now) || isSameDay(new Date(a.appointment_date), now));
+  const past = filtered.filter((a) => !(isAfter(new Date(a.appointment_date), now) || isSameDay(new Date(a.appointment_date), now)));
+
+  const hasFilters = search || filterType !== "all" || filterStatus !== "all";
 
   return (
     <AppShell>
@@ -198,12 +235,69 @@ function CalendarPage() {
         </Dialog>
       </div>
 
+      <div className="mt-5 space-y-2">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("filters.search")}
+            className="rounded-full pl-9"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-accent"
+              aria-label="clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger className="h-9 w-auto rounded-full text-xs">
+              <SelectValue placeholder={t("filters.type")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("filters.all")}</SelectItem>
+              {KIND_VALUES.map((k) => (
+                <SelectItem key={k} value={k}>{t(`calendar.types.${k}`)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
+            <SelectTrigger className="h-9 w-auto rounded-full text-xs">
+              <SelectValue placeholder={t("filters.status")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("filters.all")}</SelectItem>
+              <SelectItem value="upcoming">{t("filters.upcoming")}</SelectItem>
+              <SelectItem value="past">{t("filters.past")}</SelectItem>
+              <SelectItem value="today">{t("filters.today")}</SelectItem>
+              <SelectItem value="week">{t("filters.week")}</SelectItem>
+              <SelectItem value="month">{t("filters.month")}</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={() => { setSearch(""); setFilterType("all"); setFilterStatus("all"); }}
+              className="inline-flex h-9 items-center gap-1 rounded-full border border-input bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-accent"
+            >
+              <X className="h-3 w-3" /> {t("filters.clear")}
+            </button>
+          )}
+        </div>
+      </div>
+
       <section className="mt-6">
         <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("calendar.upcoming")}</h2>
         <div className="mt-3 space-y-3">
           {upcoming.length === 0 && (
             <div className="rounded-3xl bg-card p-8 text-center shadow-card">
-              <p className="text-sm text-muted-foreground">{t("calendar.none")}</p>
+              <p className="text-sm text-muted-foreground">{hasFilters ? t("filters.noResults") : t("calendar.none")}</p>
             </div>
           )}
           {upcoming.map((a) => (
