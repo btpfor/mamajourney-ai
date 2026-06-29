@@ -1,0 +1,19 @@
+name = "mamacare-api"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare D1 — binding "BD" comme demandé
+[[d1_databases]]
+binding = "BD"
+database_name = "mamacare"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# Secrets attendus (à définir via `wrangler secret put`) :
+#   JWT_SECRET           — clé HMAC pour signer les JWT (>= 32 chars)
+#   VAPID_PUBLIC_KEY     — push web (optionnel)
+#   VAPID_PRIVATE_KEY    — push web (optionnel)
+#   VAPID_SUBJECT        — push web (optionnel)
+
+[vars]
+APP_ENV = "production"

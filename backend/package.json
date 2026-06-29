@@ -1,0 +1,16 @@
+{
+  "name": "mamacare-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute mamacare --remote --file=./migrations/0001_init.sql",
+    "db:migrate:local": "wrangler d1 execute mamacare --local --file=./migrations/0001_init.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250601.0",
+    "typescript": "^5.6.0",
+    "wrangler": "^3.90.0"
+  }
+}
