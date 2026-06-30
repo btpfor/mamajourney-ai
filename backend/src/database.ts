@@ -47,6 +47,17 @@ export interface SessionRow {
   id: string; user_id: string; user_agent: string | null;
   created_at: string; expires_at: string; revoked_at: string | null;
 }
+export interface ConversationRow {
+  id: string; user_id: string; title: string; created_at: string; updated_at: string;
+}
+export interface MessageRow {
+  id: string; conversation_id: string; role: "user" | "assistant" | "system";
+  content: string; created_at: string;
+}
+export interface PushSubscriptionRow {
+  id: string; user_id: string; endpoint: string; p256dh: string; auth: string;
+  user_agent: string | null; created_at: string;
+}
 
 // ----------------------------- DB API -----------------------------
 
