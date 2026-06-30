@@ -37,21 +37,26 @@ const r = (method: string, pattern: string, handler: Handler | AuthedHandler, au
 const routes: Route[] = [
   // ---- Public ----
   r("POST",   "/api/auth/signup",          Auth.signup,                  false),
+  r("POST",   "/api/auth/register",        Auth.signup,                  false),
   r("POST",   "/api/auth/signin",          Auth.signin,                  false),
+  r("POST",   "/api/auth/login",           Auth.signin,                  false),
   r("POST",   "/api/auth/password/reset",  Auth.requestPasswordReset,    false),
   r("POST",   "/api/auth/password/confirm",Auth.confirmPasswordReset,    false),
   r("GET",    "/api/health",               async () => json({ ok: true }), false),
 
   // ---- Authed ----
   r("POST",   "/api/auth/signout",         Auth.signout),
+  r("POST",   "/api/auth/logout",          Auth.signout),
 
   r("GET",    "/api/users/me",             Users.getMe),
   r("PATCH",  "/api/users/me",             Users.updateMe),
+  r("PUT",    "/api/users/me",             Users.updateMe),
 
   r("GET",    "/api/pregnancies",          Pregnancies.list),
   r("POST",   "/api/pregnancies",          Pregnancies.create),
   r("GET",    "/api/pregnancies/active",   Pregnancies.active),
   r("PATCH",  "/api/pregnancies/:id",      Pregnancies.update),
+  r("PUT",    "/api/pregnancies/:id",      Pregnancies.update),
   r("DELETE", "/api/pregnancies/:id",      Pregnancies.remove),
 
   r("GET",    "/api/appointments",         Appointments.list),
